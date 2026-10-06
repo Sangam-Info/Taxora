@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1B2550" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" />
+    <link rel="stylesheet" href="/src/styles.css" />
+    <meta name="robots" content="noindex" />
+    <title>Your account | Taxora</title>
+  </head>
+  <body>
+    <div class="dash" data-page hidden>
+      <header class="topbar">
+        <a class="wordmark" href="/dashboard">Taxora</a>
+        <button type="button" class="btn-quiet" id="signout" data-busy-label="Signing out…">Sign out</button>
+      </header>
+      <main class="sheet sheet-top">
+        <div class="content">
+          <h1 id="welcome">Welcome</h1>
+          <p class="lede">You’re signed in. Here are your account details.</p>
+
+          <div class="notice" id="verify-notice" hidden>
+            <p>Confirm your email address. We sent a link to <strong id="verify-email"></strong>.</p>
+            <div class="notice-actions">
+              <button type="button" class="btn-small" id="verify-check" data-busy-label="Checking…">I’ve confirmed it</button>
+              <button type="button" class="link" id="verify-resend" data-busy-label="Sending…">Resend email</button>
+            </div>
+          </div>
+          <div class="alert" id="dash-alert" role="status" hidden></div>
+
+          <dl class="ledger">
+            <div><dt>Name</dt><dd id="d-name">—</dd></div>
+            <div><dt>Email</dt><dd id="d-email">—</dd></div>
+            <div><dt>Email status</dt><dd id="d-verified">—</dd></div>
+            <div><dt>Member since</dt><dd id="d-created">—</dd></div>
+            <div><dt>Last sign-in</dt><dd id="d-last">—</dd></div>
+          </dl>
+        </div>
+      </main>
+    </div>
+    <noscript><p class="noscript">Taxora needs JavaScript to show your account.</p></noscript>
+    <script type="module" src="/src/pages/dashboard.js"></script>
+  </body>
+</html>

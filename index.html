@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1B2550" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" />
+    <link rel="stylesheet" href="/src/styles.css" />
+    <meta name="description" content="Sign in to your Taxora account." />
+    <title>Sign in | Taxora</title>
+  </head>
+  <body>
+    <div class="auth" data-page hidden>
+      <aside class="brand">
+        <a class="wordmark" href="/">Taxora</a>
+        <p class="brand-line">Books, GST and bank statements, kept in one ledger.</p>
+        <p class="brand-foot">A Sangam InfoAnalytics product</p>
+      </aside>
+      <main class="sheet">
+        <div class="form-wrap">
+          <section id="signin-view" aria-labelledby="signin-title">
+            <h1 id="signin-title">Sign in</h1>
+            <p class="lede">Enter your email and password to open your books.</p>
+            <div class="alert" id="signin-alert" role="alert" hidden></div>
+            <form id="signin-form" novalidate>
+              <div class="field">
+                <label for="si-email">Email</label>
+                <input id="si-email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" required aria-describedby="si-email-error" />
+                <p class="field-error" id="si-email-error"></p>
+              </div>
+              <div class="field">
+                <div class="label-row">
+                  <label for="si-password">Password</label>
+                  <button type="button" class="link" id="forgot-link">Forgot password?</button>
+                </div>
+                <div class="password">
+                  <input id="si-password" name="password" type="password" autocomplete="current-password" required aria-describedby="si-password-error" />
+                  <button type="button" class="reveal" aria-controls="si-password" aria-pressed="false" aria-label="Show password">Show</button>
+                </div>
+                <p class="field-error" id="si-password-error"></p>
+              </div>
+              <label class="check"><input type="checkbox" name="remember" checked /> Keep me signed in on this device</label>
+              <button class="btn" type="submit" data-busy-label="Signing in…">Sign in</button>
+            </form>
+            <p class="switch">New to Taxora? <a href="/signup">Create an account</a></p>
+          </section>
+
+          <section id="reset-view" aria-labelledby="reset-title" hidden>
+            <h1 id="reset-title">Reset your password</h1>
+            <p class="lede">We’ll email you a link to choose a new password.</p>
+            <div class="alert" id="reset-alert" role="alert" hidden></div>
+            <form id="reset-form" novalidate>
+              <div class="field">
+                <label for="rs-email">Email</label>
+                <input id="rs-email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" required aria-describedby="rs-email-error" />
+                <p class="field-error" id="rs-email-error"></p>
+              </div>
+              <button class="btn" type="submit" data-busy-label="Sending link…">Send reset link</button>
+            </form>
+            <p class="switch"><button type="button" class="link" id="back-link">Back to sign in</button></p>
+          </section>
+        </div>
+      </main>
+    </div>
+    <noscript><p class="noscript">Taxora needs JavaScript to sign you in.</p></noscript>
+    <script type="module" src="/src/pages/signin.js"></script>
+  </body>
+</html>
