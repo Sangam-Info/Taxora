@@ -1,15 +1,15 @@
 import { defineConfig } from 'vite';
-import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const root = import.meta.dirname;
+const page = (file) => fileURLToPath(new URL(file, import.meta.url));
 const cleanPages = { signup: 'signup.html', dashboard: 'dashboard.html' };
 
-// Lets /signup and /dashboard work locally, matching Cloudflare Pages' clean URLs.
+// Lets /signup and /dashboard work locally, matching Cloudflare's clean URLs.
 function cleanUrls() {
   const rewrite = (req, _res, next) => {
     const [path, query] = req.url.split('?');
-    const page = cleanPages[path.replace(/^\/|\/$/g, '')];
-    if (page) req.url = `/${page}${query ? `?${query}` : ''}`;
+    const target = cleanPages[path.replace(/^\/|\/$/g, '')];
+    if (target) req.url = `/${target}${query ? `?${query}` : ''}`;
     next();
   };
   return {
@@ -31,9 +31,9 @@ export default defineConfig({
     chunkSizeWarningLimit: 700,
     rollupOptions: {
       input: {
-        main: resolve(root, 'index.html'),
-        signup: resolve(root, 'signup.html'),
-        dashboard: resolve(root, 'dashboard.html'),
+        main: page('./index.html'),
+        signup: page('./signup.html'),
+        dashboard: page('./dashboard.html'),
       },
     },
   },

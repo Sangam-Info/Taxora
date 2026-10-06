@@ -1,0 +1,16 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  // Must match the Worker name in your Cloudflare dashboard.
+  "name": "taxora-auth",
+  "compatibility_date": "2026-10-01",
+  // Builds the site automatically before every `wrangler deploy`,
+  // so it works even if the dashboard build command is empty.
+  "build": {
+    "command": "npm run build"
+  },
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "none"
+  }
+}

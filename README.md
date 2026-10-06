@@ -1,6 +1,6 @@
 # Taxora Auth
 
-Standalone sign-up / sign-in app for Taxora, built with Vite, Firebase Authentication and Cloud Firestore, deployed on Cloudflare Pages.
+Standalone sign-up / sign-in app for Taxora, built with Vite, Firebase Authentication and Cloud Firestore, deployed on Cloudflare Workers (static assets).
 
 ## What it does
 
@@ -28,6 +28,7 @@ src/lib/ui.js         Form validator, alerts, busy buttons, show/hide password
 src/pages/*.js        One script per page
 src/styles.css        All styling (light + dark)
 firestore.rules       Database security rules
+wrangler.jsonc        Cloudflare Workers deploy config
 public/_headers       Cloudflare security + cache headers
 ```
 
@@ -39,7 +40,7 @@ public/_headers       Cloudflare security + cache headers
 4. **Firestore → Rules →** paste the contents of `firestore.rules` → **Publish**.
    (Or from the terminal: `npm run deploy:rules`.)
 5. **Project settings → General → Your apps →** add a **Web app** if none exists, and copy its config values.
-6. After deploying, add your Cloudflare domain (e.g. `taxora-auth.pages.dev`) under **Authentication → Settings → Authorized domains**.
+6. After deploying, add your Cloudflare domain (e.g. `taxora-auth.<your-subdomain>.workers.dev`) under **Authentication → Settings → Authorized domains**.
 
 ## 2. Run locally
 
@@ -65,19 +66,23 @@ git push -u origin main
 
 `.env` is git-ignored, so your keys never reach GitHub.
 
-## 4. Deploy on Cloudflare Pages
+## 4. Deploy on Cloudflare Workers
 
-1. Cloudflare dashboard → **Workers & Pages → Create → Pages → Connect to Git** → pick `taxora-auth`.
-2. Build settings:
-   - Framework preset: **None**
-   - Build command: `npm run build`
-   - Build output directory: `dist`
-3. **Environment variables** (Production and Preview): add all six `VITE_FIREBASE_*` values from your `.env`.
-4. **Save and Deploy.** Every push to `main` redeploys automatically.
+`wrangler.jsonc` is already set up: `wrangler deploy` builds the site and uploads `dist/` as static assets.
 
-Then do step 1.6 (authorized domain) with the URL Cloudflare gives you.
+1. Cloudflare dashboard → **Workers & Pages → Create → Import a repository** → pick `taxora-auth`.
+2. Make sure the Worker name matches `"name"` in `wrangler.jsonc` (default `taxora-auth`).
+3. **Settings → Build:**
+   - Build command: `npm run build` (optional; the deploy step builds too)
+   - Deploy command: `npx wrangler deploy`
+   - Root directory: `/`
+4. **Settings → Build → Variables and secrets:** add all six `VITE_FIREBASE_*` values from your `.env`.
+   These must be **build** variables; Vite bakes them in at build time.
+5. Push to `main` (or click **Retry deployment**). Every push redeploys automatically.
 
-Alternative without Git: `npx wrangler login` then `npm run deploy`.
+Then add the `*.workers.dev` URL Cloudflare gives you under Firebase **Authentication → Settings → Authorized domains**.
+
+Manual deploy from your PC: `npx wrangler login`, then `npm run deploy`.
 
 ## Notes
 
