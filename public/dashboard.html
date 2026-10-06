@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <title>Dashboard</title>
+</head>
+<body class="is-guarded">
+  <div class="dashboard">
+    <header class="topbar">
+      <a class="brand-mark" href="/dashboard"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 14.5l3.5 3.5L19 10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Workspace</span></a>
+      <button id="logout-button" class="btn btn-secondary" type="button">Logout</button>
+    </header>
+    <main class="dashboard-main">
+      <h1 class="welcome">Welcome, <span id="user-name"></span></h1>
+      <p class="welcome-sub">You are successfully signed in.</p>
+    </main>
+  </div>
+  <script type="module" src="/js/dashboard.js"></script>
+</body>
+</html>

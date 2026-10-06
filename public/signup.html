@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <title>Create Account</title>
+</head>
+<body>
+  <div class="auth-shell">
+    <aside class="brand-panel">
+      <a class="brand-mark" href="/signin"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 14.5l3.5 3.5L19 10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Workspace</span></a>
+      <p class="brand-statement">One account for everything you do here.</p>
+      <p class="brand-foot">Secured by Firebase Authentication</p>
+    </aside>
+    <main class="form-area">
+      <div class="form-card">
+        <a class="brand-mark" href="/signin"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 14.5l3.5 3.5L19 10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Workspace</span></a>
+        <h1 class="form-title">Create your account</h1>
+        <p class="form-subtitle">It takes less than a minute.</p>
+
+        <form id="signup-form" novalidate>
+          <div class="form-alert" aria-live="polite"></div>
+
+          <div class="field">
+            <label for="name">Full Name</label>
+            <input id="name" name="name" type="text" autocomplete="name" maxlength="100" required aria-describedby="name-error">
+            <p class="field-error" id="name-error"></p>
+          </div>
+
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" inputmode="email" required aria-describedby="email-error">
+            <p class="field-error" id="email-error"></p>
+          </div>
+
+          <div class="field">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="new-password" required aria-describedby="password-hint password-error">
+            <p class="field-hint" id="password-hint">At least 6 characters.</p>
+            <p class="field-error" id="password-error"></p>
+          </div>
+
+          <div class="field">
+            <label for="confirm-password">Confirm Password</label>
+            <input id="confirm-password" name="confirmPassword" type="password" autocomplete="new-password" required aria-describedby="confirm-password-error">
+            <p class="field-error" id="confirm-password-error"></p>
+          </div>
+
+          <button class="btn btn-primary" type="submit">Create Account</button>
+        </form>
+
+        <p class="switch-link">Already have an account? <a href="/signin">Sign In</a></p>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/js/auth.js"></script>
+</body>
+</html>
