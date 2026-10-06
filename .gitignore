@@ -1,7 +1,0 @@
-node_modules/
-.env
-.DS_Store
-npm-debug.log*
-# Never commit Firebase Admin / service-account keys
-*serviceAccount*.json
-*-firebase-adminsdk-*.json
