@@ -17,19 +17,17 @@ service cloud.firestore {
       allow list: if false;
 
       allow create: if isOwner(uid)
-        && request.resource.data.keys().hasAll(['uid', 'fullName', 'email', 'emailVerified', 'createdAt', 'lastLoginAt'])
-        && request.resource.data.keys().hasOnly(['uid', 'fullName', 'email', 'emailVerified', 'createdAt', 'lastLoginAt'])
+        && request.resource.data.keys().hasAll(['uid', 'fullName', 'email', 'createdAt', 'lastLoginAt'])
+        && request.resource.data.keys().hasOnly(['uid', 'fullName', 'email', 'createdAt', 'lastLoginAt'])
         && request.resource.data.uid == uid
         && request.resource.data.email == request.auth.token.email
         && validName(request.resource.data.fullName)
-        && request.resource.data.emailVerified == request.auth.token.email_verified
         && request.resource.data.createdAt == request.time
         && request.resource.data.lastLoginAt == request.time;
 
       allow update: if isOwner(uid)
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['fullName', 'emailVerified', 'lastLoginAt'])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['fullName', 'lastLoginAt'])
         && validName(request.resource.data.fullName)
-        && request.resource.data.emailVerified == request.auth.token.email_verified
         && request.resource.data.lastLoginAt is timestamp
         && request.resource.data.lastLoginAt <= request.time;
 

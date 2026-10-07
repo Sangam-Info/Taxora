@@ -3,12 +3,9 @@ import {
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
-  sendEmailVerification,
-  sendPasswordResetEmail,
   setPersistence,
   browserLocalPersistence,
   browserSessionPersistence,
-  reload,
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../firebase.js';
@@ -20,7 +17,6 @@ function newProfile(user, fullName) {
     uid: user.uid,
     fullName,
     email: user.email,
-    emailVerified: user.emailVerified,
     createdAt: serverTimestamp(),
     lastLoginAt: serverTimestamp(),
   };
@@ -38,9 +34,6 @@ export async function signUp({ fullName, email, password }) {
     await user.delete().catch(() => {});
     throw error;
   }
-
-  // Verification email is sent in the background; sign-up doesn't wait for it.
-  sendEmailVerification(user).catch((error) => console.warn('Verification email not sent', error));
   return user;
 }
 
@@ -63,7 +56,7 @@ export async function syncProfile(user) {
   }
 
   try {
-    await updateDoc(ref, { lastLoginAt: serverTimestamp(), emailVerified: user.emailVerified });
+    await updateDoc(ref, { lastLoginAt: serverTimestamp() });
   } catch (error) {
     // A missed timestamp update should never block sign-in.
     console.warn('Could not record sign-in time', error);
@@ -73,23 +66,6 @@ export async function syncProfile(user) {
 export async function getProfile(uid) {
   const snapshot = await getDoc(userRef(uid));
   return snapshot.exists() ? snapshot.data() : null;
-}
-
-export function resetPassword(email) {
-  return sendPasswordResetEmail(auth, email);
-}
-
-export function resendVerification(user) {
-  return sendEmailVerification(user);
-}
-
-/** Reloads the user from Firebase; returns true and updates the profile if the email is now verified. */
-export async function refreshVerification(user) {
-  await reload(user);
-  if (!user.emailVerified) return false;
-  await user.getIdToken(true);
-  await updateDoc(userRef(user.uid), { emailVerified: true });
-  return true;
 }
 
 export function logOut() {

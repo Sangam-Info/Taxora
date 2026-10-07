@@ -1,15 +1,13 @@
-import { getProfile, syncProfile, logOut, resendVerification, refreshVerification } from '../services/auth.js';
+import { getProfile, syncProfile, logOut } from '../services/auth.js';
 import { requireUser } from '../services/session.js';
 import { friendlyError } from '../lib/errors.js';
-import { setBusy, setButtonState, succeed, showAlert, clearAlert, revealPage } from '../lib/ui.js';
+import { setBusy, succeed, showAlert, revealPage } from '../lib/ui.js';
 
 const dateFormat = new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 const formatDate = (timestamp) => (timestamp?.toDate ? dateFormat.format(timestamp.toDate()) : '—');
 const setText = (id, value) => {
   document.getElementById(id).textContent = value;
 };
-
-const RESEND_COOLDOWN_SECONDS = 60;
 
 async function loadProfile(user) {
   let profile = await getProfile(user.uid);
@@ -25,13 +23,8 @@ function render(user, profile) {
   setText('welcome', `Welcome, ${name.split(' ')[0]}`);
   setText('d-name', profile?.fullName || user.displayName || '—');
   setText('d-email', user.email);
-  setText('d-verified', user.emailVerified ? 'Confirmed' : 'Not confirmed yet');
   setText('d-created', formatDate(profile?.createdAt));
   setText('d-last', formatDate(profile?.lastLoginAt));
-
-  const notice = document.getElementById('verify-notice');
-  notice.hidden = user.emailVerified;
-  setText('verify-email', user.email);
 }
 
 async function main() {
@@ -48,7 +41,6 @@ async function main() {
   render(user, profile);
   revealPage();
 
-  // Sign out
   const signOutButton = document.getElementById('signout');
   signOutButton.addEventListener('click', async () => {
     setBusy(signOutButton, true);
@@ -60,58 +52,6 @@ async function main() {
       setBusy(signOutButton, false);
     }
   });
-
-  // Email confirmation
-  const checkButton = document.getElementById('verify-check');
-  checkButton.addEventListener('click', async () => {
-    clearAlert(alert);
-    setBusy(checkButton, true);
-    try {
-      if (await refreshVerification(user)) {
-        render(user, await getProfile(user.uid));
-        showAlert(alert, 'Email confirmed.', 'success');
-        setButtonState(checkButton, 'success');
-      } else {
-        showAlert(alert, 'Not confirmed yet. Open the link in the email we sent, then try again.');
-      }
-    } catch (error) {
-      showAlert(alert, friendlyError(error));
-    } finally {
-      setBusy(checkButton, false);
-    }
-  });
-
-  const resendButton = document.getElementById('verify-resend');
-  resendButton.addEventListener('click', async () => {
-    clearAlert(alert);
-    resendButton.disabled = true;
-    resendButton.textContent = 'Sending…';
-    try {
-      await resendVerification(user);
-      showAlert(alert, `Confirmation email sent to ${user.email}.`, 'success');
-      startCooldown(resendButton);
-    } catch (error) {
-      showAlert(alert, friendlyError(error));
-      resendButton.disabled = false;
-      resendButton.textContent = 'Resend email';
-    }
-  });
-}
-
-function startCooldown(button) {
-  let remaining = RESEND_COOLDOWN_SECONDS;
-  button.disabled = true;
-  const tick = () => {
-    if (remaining <= 0) {
-      button.disabled = false;
-      button.textContent = 'Resend email';
-      return;
-    }
-    button.textContent = `Resend in ${remaining}s`;
-    remaining -= 1;
-    setTimeout(tick, 1000);
-  };
-  tick();
 }
 
 main();

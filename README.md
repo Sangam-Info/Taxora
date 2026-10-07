@@ -6,21 +6,19 @@ Standalone sign-up / sign-in app for Taxora, built with Vite, Firebase Authentic
 
 - **Sign up** with full name, email and password (validated in the browser, enforced again by Firebase and Firestore rules)
 - **Sign in** with "keep me signed in" (device-wide session) or a tab-only session
-- **Forgot password** email flow
-- **Email confirmation** banner with resend (60-second cooldown) and re-check
 - **Protected dashboard** showing the user's Firestore profile; signing out in one tab signs out every tab
-- **Firestore profile** at `users/{uid}`: `uid`, `fullName`, `email`, `emailVerified`, `createdAt`, `lastLoginAt`
+- **Firestore profile** at `users/{uid}`: `uid`, `fullName`, `email`, `createdAt`, `lastLoginAt`
 - If the profile can't be saved during sign-up, the new Auth account is deleted so no half-created accounts remain
 - Security headers (CSP, HSTS, no framing) via `public/_headers`
 
 ## Project structure
 
 ```
-index.html            Sign in + reset password
+index.html            Sign in
 signup.html           Create account
 dashboard.html        Protected account page
 src/firebase.js       Firebase init (reads VITE_* env vars)
-src/services/auth.js  Sign up, sign in, sign out, profile, verification, reset
+src/services/auth.js  Sign up, sign in, sign out, profile
 src/services/session.js  Route guards
 src/lib/validation.js Form rules
 src/lib/errors.js     Firebase error codes -> plain messages
@@ -87,5 +85,4 @@ Manual deploy from your PC: `npx wrangler login`, then `npm run deploy`.
 ## Notes
 
 - Firebase web config values are not secrets; access is protected by Firebase Auth and `firestore.rules`.
-- Turn on **email enumeration protection** (Authentication → Settings) if your project doesn't have it on already.
 - The brand name lives in the HTML files and `src/styles.css` comment; search for `Taxora` to rename.

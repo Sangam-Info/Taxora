@@ -2,7 +2,7 @@ const WRONG_CREDENTIALS = 'Email or password is incorrect.';
 const BAD_CONFIG = 'Taxora’s Firebase settings are invalid. Check the environment variables and rebuild.';
 
 const MESSAGES = {
-  'auth/email-already-in-use': 'An account with this email already exists. Sign in instead, or reset your password.',
+  'auth/email-already-in-use': 'An account with this email already exists. Sign in instead.',
   'auth/invalid-email': 'Enter a valid email address, like name@company.com.',
   'auth/missing-email': 'Enter your email address.',
   'auth/invalid-credential': WRONG_CREDENTIALS,
