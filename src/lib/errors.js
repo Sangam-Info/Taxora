@@ -14,26 +14,24 @@ const MESSAGES = {
   'auth/network-request-failed': 'Can’t reach the server. Check your internet connection and try again.',
   'auth/weak-password': 'Choose a stronger password: at least 8 characters with a letter and a number.',
   'auth/password-does-not-meet-requirements': 'This password doesn’t meet the security requirements. Try a longer mix of letters and numbers.',
-  'auth/operation-not-allowed': 'This sign-in method is turned off. Enable it in Firebase Console under Authentication → Sign-in method.',
-  'auth/popup-blocked': 'Your browser blocked the Google sign-in window. Allow pop-ups for this site and try again.',
-  'auth/account-exists-with-different-credential': 'This email is already registered with a password. Sign in with your email and password instead.',
+  'auth/operation-not-allowed': 'Email sign-in is turned off. Enable Email/Password in Firebase Console under Authentication → Sign-in method.',
   'auth/requires-recent-login': 'Sign in again to continue.',
   'auth/invalid-api-key': BAD_CONFIG,
   'auth/api-key-not-valid.-please-pass-a-valid-api-key.': BAD_CONFIG,
   'auth/unauthorized-domain': 'This website isn’t on the Firebase authorized domains list. Add it under Authentication settings.',
+  'auth/configuration-not-found': 'Firebase Authentication isn’t set up yet. In Firebase Console, open Authentication, click Get started, and enable Email/Password.',
+  'auth/admin-restricted-operation': 'New sign-ups are blocked in Firebase. Turn on user sign-up under Authentication → Settings → User actions.',
+  'auth/internal-error': 'Firebase returned an internal error. Check that Authentication is set up and this domain is authorised.',
+  'not-found': 'The Firestore database doesn’t exist yet. Create it in Firebase Console under Firestore Database.',
   'permission-denied': 'Your account details couldn’t be saved. Make sure the Firestore security rules are published.',
   'unavailable': 'The database is unreachable right now. Check your connection and try again.',
   'failed-precondition': 'The database isn’t set up yet. Create a Firestore database in Firebase Console.',
 };
 
-// Closing the Google window isn't an error worth showing.
-const SILENT = new Set(['auth/popup-closed-by-user', 'auth/cancelled-popup-request', 'auth/user-cancelled']);
-
-export function isSilentError(error) {
-  return SILENT.has(error?.code);
-}
-
 export function friendlyError(error) {
   console.error(error);
-  return MESSAGES[error?.code] ?? 'Something went wrong. Try again in a moment.';
+  const code = error?.code;
+  if (MESSAGES[code]) return MESSAGES[code];
+  // Show the code so unexpected problems can be diagnosed quickly.
+  return code ? `Something went wrong (${code}). Try again in a moment.` : 'Something went wrong. Try again in a moment.';
 }

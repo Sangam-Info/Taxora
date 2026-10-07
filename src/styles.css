@@ -856,17 +856,6 @@ h1 {
   pointer-events: none;
 }
 
-.g-logo {
-  width: 18px;
-  height: 18px;
-  flex: none;
-}
-
-.btn[data-state="loading"] .g-logo,
-.btn[data-state="success"] .g-logo {
-  display: none;
-}
-
 .btn-spinner {
   display: none;
   width: 16px;
@@ -902,11 +891,6 @@ h1 {
 
 .btn-primary[data-state="success"] {
   background: var(--success);
-  border-color: var(--success);
-}
-
-.btn-secondary[data-state="success"] {
-  color: var(--success);
   border-color: var(--success);
 }
 
@@ -972,24 +956,6 @@ h1 {
 
 .back:hover svg {
   transform: translateX(-2px);
-}
-
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin: 22px 0;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--subtle);
-}
-
-.divider::before,
-.divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--border);
 }
 
 .switch {

@@ -9,9 +9,6 @@ import {
   browserLocalPersistence,
   browserSessionPersistence,
   reload,
-  GoogleAuthProvider,
-  signInWithPopup,
-  browserPopupRedirectResolver,
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../firebase.js';
@@ -50,19 +47,6 @@ export async function signUp({ fullName, email, password }) {
 export async function signIn({ email, password, remember }) {
   await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
   const { user } = await signInWithEmailAndPassword(auth, email, password);
-  await syncProfile(user);
-  return user;
-}
-
-/** Google sign-in. Creates the Firestore profile on first use. */
-export async function signInWithGoogle({ remember }) {
-  const provider = new GoogleAuthProvider();
-  provider.setCustomParameters({ prompt: 'select_account' });
-  // Not awaited: the popup must open within the click, or browsers block it.
-  // Firebase queues the persistence change ahead of the sign-in.
-  const persistence = setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
-  const { user } = await signInWithPopup(auth, provider, browserPopupRedirectResolver);
-  await persistence;
   await syncProfile(user);
   return user;
 }

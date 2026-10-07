@@ -1,7 +1,7 @@
-import { signIn, signInWithGoogle, resetPassword } from '../services/auth.js';
+import { signIn, resetPassword } from '../services/auth.js';
 import { redirectIfSignedIn } from '../services/session.js';
 import { validateEmail, validateSignInPassword } from '../lib/validation.js';
-import { friendlyError, isSilentError } from '../lib/errors.js';
+import { friendlyError } from '../lib/errors.js';
 import {
   createValidator,
   setButtonState,
@@ -29,13 +29,7 @@ async function main() {
   const form = document.getElementById('signin-form');
   const alert = document.getElementById('signin-alert');
   const submit = form.querySelector('[type="submit"]');
-  const googleButton = document.getElementById('google-btn');
   const validator = createValidator(form, { email: validateEmail, password: validateSignInPassword });
-
-  const lock = (locked) => {
-    googleButton.disabled = locked;
-    submit.disabled = locked;
-  };
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -43,7 +37,6 @@ async function main() {
     if (!validator.validate()) return;
 
     setButtonState(submit, 'loading');
-    googleButton.disabled = true;
     try {
       await signIn({
         email: form.email.value.trim(),
@@ -54,22 +47,6 @@ async function main() {
     } catch (error) {
       showAlert(alert, friendlyError(error));
       setButtonState(submit, 'idle');
-      lock(false);
-    }
-  });
-
-  // ---- Google ----
-  googleButton.addEventListener('click', async () => {
-    clearAlert(alert);
-    setButtonState(googleButton, 'loading');
-    submit.disabled = true;
-    try {
-      await signInWithGoogle({ remember: form.remember.checked });
-      succeed(googleButton, goToDashboard);
-    } catch (error) {
-      if (!isSilentError(error)) showAlert(alert, friendlyError(error));
-      setButtonState(googleButton, 'idle');
-      lock(false);
     }
   });
 
