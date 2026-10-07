@@ -53,7 +53,7 @@ function buildRow(client) {
   const row = rowTemplate.content.firstElementChild.cloneNode(true);
   const link = row.querySelector('a');
   link.href = `/client?id=${encodeURIComponent(client.id)}`;
-  link.setAttribute('aria-label', `Open ${client.name}${client.hasPin ? ' (PIN protected)' : ''}`);
+  link.setAttribute('aria-label', `Open ${client.name} (${client.hasPin ? 'PIN protected' : 'PIN not set'})`);
   const set = (key, value) => {
     row.querySelector(`[data-f="${key}"]`).textContent = value;
   };
@@ -64,8 +64,8 @@ function buildRow(client) {
   set('gstin', client.gstin || '—');
   set('period', periodShort(client.itrPeriod));
   const badge = row.querySelector('[data-f="access"]');
-  badge.textContent = client.hasPin ? 'PIN protected' : 'No PIN';
-  badge.classList.add(client.hasPin ? 'badge-lock' : 'badge-muted');
+  badge.textContent = client.hasPin ? 'PIN protected' : 'PIN not set';
+  badge.classList.add(client.hasPin ? 'badge-lock' : 'badge-warn');
   return row;
 }
 
@@ -87,6 +87,14 @@ function renderClients() {
 }
 
 search.addEventListener('input', renderClients);
+
+// Shorter placeholder on narrow screens so it isn't cut off.
+const narrow = window.matchMedia('(max-width: 420px)');
+const setPlaceholder = () => {
+  search.placeholder = narrow.matches ? 'Search clients' : 'Search name, PAN, GSTIN or phone';
+};
+narrow.addEventListener('change', setPlaceholder);
+setPlaceholder();
 
 // ---------------------------------------------------------------------------
 // Add client

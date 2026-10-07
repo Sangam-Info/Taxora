@@ -18,12 +18,14 @@ After signing in, the dashboard is your firm's workspace:
 
 - **Clients list** with search (name, PAN, GSTIN, phone), live updates, empty and loading states
 - **Add client**: name, ITR period, phone, email, address, PAN, GST number, bank name, account holder, A/C number, IFSC, and an optional PIN
-- **Open a client** (`/client?id=…`): asks for the PIN when one is set, then shows all details (A/C number masked until you click Show)
-- **Client actions**: Edit client, Set / Change PIN, Remove PIN, Delete client (with confirmation), Log out client
-- **Forgot a client PIN?** Confirm your account password to remove it
+- **Open a client** (`/client?id=…`): every client needs a PIN. With a PIN set, it's asked for; with none (new client or PIN removed), a Set PIN step comes first. Both screens sit over a blurred placeholder, so no client data is shown until the PIN step is done. The A/C number stays masked until you click Show
+- **Client actions**: Edit client, Set / Change PIN, Remove PIN (a new PIN is required on the next visit), Delete client (two steps: a warning, then typing the client's exact name), Log out client
+- **Forgot a client PIN?** Confirm your account password, then choose a new PIN
 - 5 wrong PINs locks that client for 60 seconds; opened clients re-lock after 30 minutes, on Log out client, or on Sign out
 
 Data is stored at `users/{uid}/clients/{clientId}`. The Firestore rules only let the signed-in owner read or change their own clients, validate every field (PAN, GSTIN must contain the same PAN, phone, IFSC, account number), and reject anything but a salted PIN hash: the PIN itself is never stored.
+
+Responsive from 320px phones (portrait and landscape) through tablets to 2560px screens: the client table becomes cards below 1024px, dialogs become bottom sheets on phones and go full-height on short landscape screens.
 
 ## Project structure
 

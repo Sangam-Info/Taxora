@@ -1413,7 +1413,7 @@ html.modal-open {
 
 /* ---------- Boxes ---------- */
 
-.box {
+.pane {
   margin-bottom: 20px;
   padding: 24px;
   background: var(--surface);
@@ -1422,7 +1422,7 @@ html.modal-open {
   box-shadow: 0 1px 2px rgba(15, 30, 69, 0.04);
 }
 
-.box h2 {
+.pane h2 {
   margin: 0 0 16px;
   font-size: 1.0625rem;
   font-weight: 700;
@@ -1430,16 +1430,16 @@ html.modal-open {
   color: var(--ink);
 }
 
-.box-quiet {
+.pane-quiet {
   background: transparent;
   box-shadow: none;
 }
 
-.box-danger {
+.pane-danger {
   border-color: #f3d2d2;
 }
 
-.box-head {
+.pane-head {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -1448,18 +1448,18 @@ html.modal-open {
   margin-bottom: 16px;
 }
 
-.box-head h2 {
+.pane-head h2 {
   margin: 0;
 }
 
-.box-sub,
-.box-text {
+.pane-sub,
+.pane-text {
   margin-top: 2px;
   font-size: 0.875rem;
   color: var(--muted);
 }
 
-.box-text {
+.pane-text {
   margin: -8px 0 16px;
 }
 
@@ -1808,8 +1808,8 @@ html.modal-open {
   align-items: start;
 }
 
-.client-grid .box,
-.stack .box {
+.client-grid .pane,
+.stack .pane {
   margin-bottom: 0;
 }
 
@@ -1829,15 +1829,141 @@ html.modal-open {
   color: var(--subtle);
 }
 
-/* PIN gate */
-.gate {
-  display: flex;
-  justify-content: center;
-  padding-top: clamp(8px, 4vh, 40px);
+/* Locked client: PIN gate / Set PIN over a blurred decoy.
+   The decoy is placeholder shapes only, so no client data sits behind the blur. */
+.locked {
+  position: relative;
+  display: grid;
+  place-items: start center;
+  min-height: min(720px, calc(100dvh - 180px));
+  padding-top: clamp(8px, 5vh, 56px);
+  isolation: isolate;
 }
 
-.gate-card {
-  text-align: left;
+.locked-backdrop {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  overflow: hidden;
+  filter: blur(9px);
+  opacity: 0.75;
+  pointer-events: none;
+  user-select: none;
+  mask-image: linear-gradient(to bottom, #000 55%, transparent);
+}
+
+.decoy-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.decoy-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #dbe4f5;
+}
+
+.decoy-heading {
+  display: grid;
+  gap: 10px;
+}
+
+.decoy-heading i,
+.decoy-title,
+.decoy-line i {
+  display: block;
+  height: 12px;
+  border-radius: 6px;
+  background: #d5ddeb;
+}
+
+.decoy-heading i:first-child {
+  width: 220px;
+  height: 22px;
+  background: #c3cee2;
+}
+
+.decoy-heading i:last-child {
+  width: 140px;
+}
+
+.decoy-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.decoy-pane {
+  display: grid;
+  gap: 18px;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+}
+
+.decoy-title {
+  width: 40%;
+  height: 16px;
+  background: #c3cee2;
+}
+
+.decoy-line {
+  display: grid;
+  grid-template-columns: 30% 1fr;
+  gap: 24px;
+}
+
+.decoy-line i:last-child {
+  width: 75%;
+  background: #c9d3e6;
+}
+
+.locked-card {
+  position: relative;
+  box-shadow: 0 2px 4px rgba(15, 30, 69, 0.05), 0 24px 60px -16px rgba(15, 30, 69, 0.28);
+}
+
+.gate-icon.gate-icon-warn {
+  background: var(--warn-soft);
+}
+
+.gate-icon.gate-icon-warn .i {
+  stroke: var(--warn);
+}
+
+.badge-warn {
+  color: var(--warn);
+  background: var(--warn-soft);
+}
+
+/* Two-step delete */
+.step-label {
+  margin: 0 0 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--danger);
+}
+
+.confirm-name {
+  margin: -8px 0 18px;
+  padding: 10px 12px;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--surface-tint);
+  border-radius: var(--r-sm);
+  overflow-wrap: anywhere;
+  user-select: none;
+}
+
+#delete-step-2 .btn-danger:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .gate-icon {
@@ -1963,6 +2089,7 @@ html.modal-open {
 .modal {
   width: min(480px, calc(100vw - 32px));
   max-height: min(88vh, 860px);
+  max-height: min(88dvh, 860px);
   padding: 0;
   color: var(--text);
   background: var(--surface);
@@ -2143,41 +2270,162 @@ html.modal-open {
 }
 
 @media (max-width: 760px) {
+  .decoy-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .search {
+    width: 100%;
+  }
+}
+
+/* Tablet and below: the client table becomes cards */
+@media (max-width: 1023px) {
   .client-head {
     display: none;
   }
 
-  /* Each client becomes a compact card */
+  .client-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    grid-template-areas:
+      "main main access open"
+      "pan gst period period";
+    gap: 10px 16px;
+    padding: 16px 12px;
+  }
+
+  .c-main { grid-area: main; }
+  .c-open { grid-area: open; }
+  .c-access { grid-area: access; justify-self: end; }
+  .c-cell[data-label="PAN"] { grid-area: pan; }
+  .c-cell[data-label="GST number"] { grid-area: gst; }
+  .c-cell[data-label="ITR period"] { grid-area: period; }
+
+  .c-cell[data-label] {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding-left: 50px;
+  }
+
+  .c-cell[data-label="GST number"],
+  .c-cell[data-label="ITR period"] {
+    padding-left: 0;
+  }
+
+  .c-cell[data-label]::before {
+    content: attr(data-label);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--subtle);
+  }
+
+  .c-name {
+    display: -webkit-box;
+    overflow: hidden;
+    white-space: normal;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow-wrap: anywhere;
+  }
+
+  .c-sub {
+    white-space: nowrap;
+  }
+}
+
+/* Phones: one column of details per card */
+@media (max-width: 560px) {
   .client-row {
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas:
       "main open"
       "pan access"
       "gst period";
-    gap: 8px 12px;
-    padding: 14px 10px;
+    gap: 10px 12px;
+    padding: 14px 6px;
   }
 
-  .c-main { grid-area: main; }
-  .c-open { grid-area: open; }
-  .c-cell[data-label="PAN"] { grid-area: pan; }
-  .c-cell[data-label="GST number"] { grid-area: gst; }
-  .c-cell[data-label="ITR period"] { grid-area: period; justify-self: end; color: var(--muted); }
-  .c-access { grid-area: access; justify-self: end; }
-
-  .c-cell[data-label]::before {
-    content: attr(data-label) " ";
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--subtle);
+  .c-cell[data-label],
+  .c-cell[data-label="GST number"] {
+    padding-left: 0;
   }
 
-  .c-cell[data-label="ITR period"]::before {
-    content: none;
+  .c-cell[data-label="ITR period"] {
+    justify-self: end;
+    text-align: right;
   }
 
-  .search {
-    width: 100%;
+  .c-open-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .c-open svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .client-title {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 420px) {
+  .client-title .avatar {
+    display: none;
+  }
+}
+
+/* Narrow phones: the 15-character GSTIN gets its own row */
+@media (max-width: 400px) {
+  .client-row {
+    grid-template-areas:
+      "main open"
+      "pan period"
+      "gst gst"
+      "access access";
+  }
+
+  .c-access {
+    justify-self: start;
+  }
+}
+
+/* Very small phones (320–360px): a little more room inside cards and inputs */
+@media (max-width: 360px) {
+  .field-icon {
+    left: 12px;
+  }
+
+  .control input {
+    padding-left: 38px;
+  }
+
+  .control:has(.reveal) input {
+    padding-right: 42px;
+  }
+
+  .control-plain input {
+    padding-left: 12px;
+  }
+
+  .card {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .workspace {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .pane {
+    padding: 18px 14px;
   }
 }
 
@@ -2186,7 +2434,7 @@ html.modal-open {
     display: none;
   }
 
-  .box {
+  .pane {
     padding: 20px 16px;
   }
 
@@ -2216,9 +2464,10 @@ html.modal-open {
   /* Dialogs become bottom sheets on phones */
   .modal,
   .modal-lg {
-    width: 100vw;
-    max-width: 100vw;
+    width: 100%;
+    max-width: 100%;
     max-height: 92vh;
+    max-height: 92dvh;
     margin: auto 0 0;
     border-radius: var(--r-xl) var(--r-xl) 0 0;
   }
@@ -2252,6 +2501,39 @@ html.modal-open {
     left: 16px;
     bottom: 16px;
     max-width: none;
+  }
+}
+
+@media (max-height: 520px) {
+  .modal,
+  .modal-lg {
+    max-height: 100vh;
+    max-height: 100dvh;
+    margin: auto;
+    border-radius: var(--r-lg);
+  }
+
+  .modal-head {
+    padding-top: 12px;
+    padding-bottom: 6px;
+  }
+
+  .modal-head h2 {
+    font-size: 1.0625rem;
+  }
+
+  .modal-foot {
+    padding-top: 10px;
+    padding-bottom: 12px;
+  }
+
+  .modal-foot .btn {
+    height: 40px;
+  }
+
+  .locked {
+    min-height: 0;
+    padding-top: 4px;
   }
 }
 

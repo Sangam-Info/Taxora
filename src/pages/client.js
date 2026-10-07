@@ -38,6 +38,7 @@ const digitsOnly = (input) =>
   input.addEventListener('input', () => {
     input.value = input.value.replace(/\D/g, '').slice(0, 6);
   });
+const confirmPinRule = (value, form) => validatePinConfirm(value, form.newPin.value) || (value ? '' : 'Re-enter the PIN.');
 
 const goToDashboard = () => window.location.assign('/dashboard');
 
@@ -46,12 +47,22 @@ let clientId;
 let client = null;
 let accountShown = false;
 
+/**
+ * Every client needs a PIN to be opened. Two exceptions keep the flow sensible:
+ * - keepOpenWithoutPin: the PIN was just removed during this visit, so the view
+ *   stays open until the client is closed (the next visit asks for a new PIN).
+ * - resetVerified: the account password was confirmed via "Forgot PIN?", so
+ *   a new PIN can be chosen without the old one.
+ */
+let keepOpenWithoutPin = false;
+let resetVerified = false;
+
 // ---------------------------------------------------------------------------
-// States: loading → missing | gate | view
+// States: loading → missing | locked (enter PIN / set PIN) | view
 // ---------------------------------------------------------------------------
 
 function showState(name) {
-  for (const state of ['loading', 'missing', 'gate', 'view']) $(`state-${state}`).hidden = state !== name;
+  for (const state of ['loading', 'missing', 'locked', 'view']) $(`state-${state}`).hidden = state !== name;
 }
 
 function render() {
@@ -62,11 +73,9 @@ function render() {
   }
   document.title = `${client.name} | Taxora`;
 
-  if (client.hasPin && !isUnlocked(clientId)) {
-    showGate();
-    return;
-  }
-  renderView();
+  if (resetVerified) return showLocked('reset');
+  if (client.hasPin) return isUnlocked(clientId) ? renderView() : showLocked('enter');
+  return keepOpenWithoutPin ? renderView() : showLocked('required');
 }
 
 function renderView() {
@@ -76,8 +85,8 @@ function renderView() {
   setText('v-name', client.name);
   setText('v-pan-sub', `PAN ${client.pan}`);
   const access = $('v-access');
-  access.textContent = client.hasPin ? 'PIN protected' : 'No PIN';
-  access.className = `badge ${client.hasPin ? 'badge-lock' : 'badge-muted'}`;
+  access.textContent = client.hasPin ? 'PIN protected' : 'PIN not set';
+  access.className = `badge ${client.hasPin ? 'badge-lock' : 'badge-warn'}`;
 
   setText('v-name-dd', client.name);
   setText('v-period', periodLabel(client.itrPeriod));
@@ -95,11 +104,10 @@ function renderView() {
     'pin-status',
     client.hasPin
       ? 'This client is protected. The PIN is asked for every time the client is opened.'
-      : 'No PIN set. Anyone signed in to your Taxora account can open this client.',
+      : 'No PIN set. A new PIN must be set the next time this client is opened.',
   );
   $('set-pin-btn').querySelector('.btn-text').textContent = client.hasPin ? 'Change PIN' : 'Set PIN';
   $('remove-pin-btn').hidden = !client.hasPin;
-  setText('logout-client-label', client.hasPin ? 'Log out client' : 'Close client');
   setText('v-meta', `Added ${formatDate(client.createdAt)}  ·  Last updated ${formatDate(client.updatedAt)}`);
 }
 
@@ -118,27 +126,61 @@ $('reveal-account').addEventListener('click', () => {
 });
 
 // ---------------------------------------------------------------------------
-// PIN gate (client "login")
+// Locked state: enter PIN, or set one first
 // ---------------------------------------------------------------------------
 
 const gateForm = $('gate-form');
 const gateAlert = $('gate-alert');
 const gateSubmit = gateForm.querySelector('[type="submit"]');
 const gateValidator = createValidator(gateForm, { pin: validatePin });
-let lockoutTimer;
 digitsOnly(gateForm.pin);
 
-function showGate() {
-  const firstShow = $('state-gate').hidden;
-  showState('gate');
+const setForm = $('setpin-form');
+const setAlert = $('setpin-alert');
+const setSubmit = setForm.querySelector('[type="submit"]');
+const setValidator = createValidator(setForm, { newPin: validatePin, confirmPin: confirmPinRule });
+digitsOnly(setForm.newPin);
+digitsOnly(setForm.confirmPin);
+setForm.newPin.addEventListener('input', () => setValidator.recheck('confirmPin'));
+
+let lockedMode = null;
+let lockoutTimer;
+
+function showLocked(mode) {
+  const changed = lockedMode !== mode || $('state-locked').hidden;
+  lockedMode = mode;
+  showState('locked');
   setText('gate-name', client.name);
-  if (firstShow) {
+  if (!changed) return;
+
+  const entering = mode === 'enter';
+  $('gate-panel').hidden = !entering;
+  $('setpin-panel').hidden = entering;
+
+  if (entering) {
+    document.title = `Enter PIN | ${client.name} | Taxora`;
     gateForm.reset();
     gateValidator.reset();
     clearAlert(gateAlert);
+    setButtonState(gateSubmit, 'idle');
     updateLockout();
     if (!gateSubmit.disabled) gateForm.pin.focus();
+    return;
   }
+
+  document.title = `Set PIN | ${client.name} | Taxora`;
+  setText('setpin-title', mode === 'reset' ? 'Set a new PIN' : 'Set a PIN to continue');
+  setText(
+    'setpin-text',
+    mode === 'reset'
+      ? `Account password confirmed. Choose a new 4–6 digit PIN for ${client.name}.`
+      : `${client.name} doesn’t have a PIN yet. Set a 4–6 digit PIN to keep this client’s details confidential.`,
+  );
+  setForm.reset();
+  setValidator.reset();
+  clearAlert(setAlert);
+  setButtonState(setSubmit, 'idle');
+  setForm.newPin.focus();
 }
 
 function updateLockout() {
@@ -168,10 +210,7 @@ gateForm.addEventListener('submit', async (event) => {
     if (await checkClientPin(client, gateForm.pin.value)) {
       unlockClient(clientId);
       setButtonState(gateSubmit, 'success');
-      setTimeout(() => {
-        setButtonState(gateSubmit, 'idle');
-        renderView();
-      }, 350);
+      setTimeout(render, 350);
       return;
     }
     const left = recordFailedAttempt(clientId);
@@ -189,7 +228,31 @@ gateForm.addEventListener('submit', async (event) => {
   }
 });
 
-// Forgot PIN: confirm the account password, then remove the PIN.
+setForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  clearAlert(setAlert);
+  if (!setValidator.validate()) return;
+
+  setButtonState(setSubmit, 'loading');
+  const wasReset = resetVerified;
+  try {
+    // Unlock first, so the live update that follows the save opens the client.
+    unlockClient(clientId);
+    resetVerified = false;
+    await setClientPin(uid, clientId, setForm.newPin.value);
+    clearAttempts(clientId);
+    setButtonState(setSubmit, 'success');
+    showToast(wasReset ? 'New PIN set' : 'PIN set');
+    setTimeout(render, 350);
+  } catch (error) {
+    lockClient(clientId);
+    resetVerified = wasReset;
+    setButtonState(setSubmit, 'idle');
+    showAlert(setAlert, friendlyError(error));
+  }
+});
+
+// Forgot PIN: confirm the account password, then choose a new PIN.
 function setupForgotPin() {
   const dialog = setupDialog($('forgot-dialog'));
   const form = $('forgot-form');
@@ -214,15 +277,14 @@ function setupForgotPin() {
     setDialogBusy(dialog, true);
     try {
       await confirmAccountPassword(form.password.value);
-      await removeClientPin(uid, clientId);
       clearAttempts(clientId);
-      unlockClient(clientId);
       setButtonState(submit, 'success');
       setTimeout(() => {
         setDialogBusy(dialog, false);
         closeDialog(dialog);
-        showToast('PIN removed. Set a new PIN to protect this client.');
-      }, 450);
+        resetVerified = true;
+        render();
+      }, 400);
     } catch (error) {
       setDialogBusy(dialog, false);
       setButtonState(submit, 'idle');
@@ -286,7 +348,7 @@ function setupEditClient() {
 }
 
 // ---------------------------------------------------------------------------
-// Set / change / remove PIN
+// Set / change / remove PIN (from the open client)
 // ---------------------------------------------------------------------------
 
 function setupPinDialog() {
@@ -297,32 +359,27 @@ function setupPinDialog() {
   [form.currentPin, form.newPin, form.confirmPin].forEach(digitsOnly);
   let mode = 'set';
 
-  const validators = {
-    set: createValidator(form, {
-      newPin: validatePin,
-      confirmPin: (value, f) => validatePinConfirm(value, f.newPin.value) || (value ? '' : 'Re-enter the PIN.'),
-    }),
-  };
   // Separate validators so hidden fields never block the visible ones.
-  const currentOnly = createValidator(form, { currentPin: validateCurrentPin });
-  form.newPin.addEventListener('input', () => validators.set.recheck('confirmPin'));
+  const newValidator = createValidator(form, { newPin: validatePin, confirmPin: confirmPinRule });
+  const currentValidator = createValidator(form, { currentPin: validateCurrentPin });
+  form.newPin.addEventListener('input', () => newValidator.recheck('confirmPin'));
 
   const copy = {
     set: { title: 'Set PIN', text: 'Choose a 4–6 digit PIN. It will be asked for every time this client is opened.', button: 'Set PIN', done: 'PIN set' },
     change: { title: 'Change PIN', text: 'Enter the current PIN, then choose a new 4–6 digit PIN.', button: 'Save new PIN', done: 'PIN changed' },
     remove: {
       title: 'Remove PIN',
-      text: 'Without a PIN, anyone signed in to your Taxora account can open this client. Enter the current PIN to confirm.',
+      text: 'The next time this client is opened, a new PIN must be set before its details are shown. Enter the current PIN to confirm.',
       button: 'Remove PIN',
-      done: 'PIN removed',
+      done: 'PIN removed. A new PIN will be needed next time.',
     },
   };
 
   function open(nextMode) {
     mode = nextMode;
     form.reset();
-    validators.set.reset();
-    currentOnly.reset();
+    newValidator.reset();
+    currentValidator.reset();
     form.querySelectorAll('.field').forEach((field) => field.classList.remove('has-error'));
     clearAlert(alert);
     const c = copy[mode];
@@ -330,7 +387,7 @@ function setupPinDialog() {
     setText('pin-dialog-text', c.text);
     submit.querySelector('.btn-text').textContent = c.button;
     submit.dataset.label = c.button;
-    submit.dataset.doneLabel = c.done;
+    submit.dataset.doneLabel = mode === 'remove' ? 'PIN removed' : c.done;
     submit.classList.toggle('btn-danger', mode === 'remove');
     submit.classList.toggle('btn-primary', mode !== 'remove');
     form.querySelector('[data-for="current"]').hidden = mode === 'set';
@@ -349,19 +406,16 @@ function setupPinDialog() {
     clearAlert(alert);
     const needsCurrent = mode !== 'set';
     const needsNew = mode !== 'remove';
-    const currentOk = needsCurrent ? currentOnly.validate() : true;
-    const newOk = needsNew ? validators.set.validate() : true;
+    const currentOk = needsCurrent ? currentValidator.validate() : true;
+    const newOk = needsNew ? newValidator.validate() : true;
     if (!currentOk || !newOk) return;
 
     setButtonState(submit, 'loading');
     setDialogBusy(dialog, true);
     try {
       if (needsCurrent) {
-        if (lockoutRemaining(clientId) > 0) {
-          throw Object.assign(new Error('locked'), { pinLocked: true });
-        }
-        const ok = await checkClientPin(client, form.currentPin.value);
-        if (!ok) {
+        if (lockoutRemaining(clientId) > 0) throw Object.assign(new Error('locked'), { pinLocked: true });
+        if (!(await checkClientPin(client, form.currentPin.value))) {
           const left = recordFailedAttempt(clientId);
           setDialogBusy(dialog, false);
           setButtonState(submit, 'idle');
@@ -378,10 +432,15 @@ function setupPinDialog() {
         clearAttempts(clientId);
       }
 
-      if (mode === 'remove') await removeClientPin(uid, clientId);
-      else await setClientPin(uid, clientId, form.newPin.value);
-      // Keep the client open for the person who just changed its PIN.
-      unlockClient(clientId);
+      if (mode === 'remove') {
+        // Stay open for now; the next visit will ask for a new PIN.
+        keepOpenWithoutPin = true;
+        await removeClientPin(uid, clientId);
+        lockClient(clientId);
+      } else {
+        unlockClient(clientId);
+        await setClientPin(uid, clientId, form.newPin.value);
+      }
 
       const done = copy[mode].done;
       setButtonState(submit, 'success');
@@ -391,39 +450,79 @@ function setupPinDialog() {
         showToast(done);
       }, 450);
     } catch (error) {
+      if (mode === 'remove') keepOpenWithoutPin = false;
       setDialogBusy(dialog, false);
       setButtonState(submit, 'idle');
       showAlert(
         alert,
-        error.pinLocked
-          ? `Too many wrong attempts. Try again in ${lockoutRemaining(clientId)} seconds.`
-          : friendlyError(error),
+        error.pinLocked ? `Too many wrong attempts. Try again in ${lockoutRemaining(clientId)} seconds.` : friendlyError(error),
       );
     }
   });
 }
 
 // ---------------------------------------------------------------------------
-// Delete client (with confirmation)
+// Delete client: step 1 warning → step 2 type the client's name
 // ---------------------------------------------------------------------------
 
 function setupDelete() {
   const dialog = setupDialog($('delete-dialog'));
+  const step1 = $('delete-step-1');
+  const step2 = $('delete-step-2');
+  const input = $('delete-confirm-input');
   const alert = $('delete-alert');
   const confirmButton = $('confirm-delete');
+  const nameMatches = () => input.value.trim() === client.name;
+
+  function showStep(step) {
+    step1.hidden = step !== 1;
+    step2.hidden = step !== 2;
+    setText('delete-dialog-title', step === 1 ? 'Delete this client?' : 'Confirm deletion');
+    if (step === 1) {
+      // Focus Cancel first, so Enter doesn't move ahead by accident.
+      step1.querySelector('[data-close]').focus();
+    } else {
+      input.value = '';
+      input.closest('.field').classList.remove('has-error');
+      clearAlert(alert);
+      setButtonState(confirmButton, 'idle');
+      confirmButton.disabled = true;
+      input.focus();
+    }
+  }
 
   $('delete-client-btn').addEventListener('click', () => {
-    setText('delete-name', client.name);
-    clearAlert(alert);
-    setButtonState(confirmButton, 'idle');
-    // Focus Cancel first, so Enter doesn't delete by accident.
-    openDialog(dialog, '[data-close].btn');
+    dialog.querySelectorAll('.delete-name').forEach((el) => {
+      el.textContent = client.name;
+    });
+    openDialog(dialog, '#delete-step-1 [data-close]');
+    showStep(1);
   });
 
-  confirmButton.addEventListener('click', async () => {
+  $('delete-continue').addEventListener('click', () => showStep(2));
+  $('delete-back').addEventListener('click', () => showStep(1));
+
+  input.addEventListener('input', () => {
+    confirmButton.disabled = !nameMatches();
+    if (nameMatches()) input.closest('.field').classList.remove('has-error');
+  });
+  // Prevent pasting the name in, so it's typed deliberately.
+  input.addEventListener('paste', (event) => event.preventDefault());
+
+  step2.addEventListener('submit', async (event) => {
+    event.preventDefault();
     clearAlert(alert);
+    if (!nameMatches()) {
+      const span = $('delete-confirm-input-error').querySelector('span');
+      span.textContent = 'The name doesn’t match. Type it exactly as shown.';
+      input.closest('.field').classList.add('has-error');
+      input.focus();
+      return;
+    }
+
     setButtonState(confirmButton, 'loading');
     setDialogBusy(dialog, true);
+    $('delete-back').disabled = true;
     const name = client.name;
     try {
       stopWatching?.();
@@ -434,7 +533,9 @@ function setupDelete() {
       succeed(confirmButton, () => window.location.replace('/dashboard'), 500);
     } catch (error) {
       setDialogBusy(dialog, false);
+      $('delete-back').disabled = false;
       setButtonState(confirmButton, 'idle');
+      confirmButton.disabled = !nameMatches();
       showAlert(alert, friendlyError(error));
       startWatching();
     }
