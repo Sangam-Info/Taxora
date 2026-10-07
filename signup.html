@@ -2,64 +2,146 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#1B2550" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#F6F8FB" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
     <link rel="stylesheet" href="/src/styles.css" />
     <meta name="description" content="Create your Taxora account." />
     <title>Create account | Taxora</title>
   </head>
   <body>
-    <div class="auth" data-page hidden>
-      <aside class="brand">
-        <a class="wordmark" href="/">Taxora</a>
-        <p class="brand-line">Books, GST and bank statements, kept in one ledger.</p>
-        <p class="brand-foot">A Sangam InfoAnalytics product</p>
-      </aside>
-      <main class="sheet">
-        <div class="form-wrap">
-          <h1>Create your account</h1>
-          <p class="lede">It takes a minute. You’ll use this email to sign in.</p>
-          <div class="alert" id="signup-alert" role="alert" hidden></div>
-          <form id="signup-form" novalidate>
-            <div class="field">
-              <label for="su-name">Full name</label>
-              <input id="su-name" name="fullName" type="text" autocomplete="name" maxlength="80" required aria-describedby="su-name-error" />
-              <p class="field-error" id="su-name-error"></p>
-            </div>
-            <div class="field">
-              <label for="su-email">Email</label>
-              <input id="su-email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" required aria-describedby="su-email-error" />
-              <p class="field-error" id="su-email-error"></p>
-            </div>
-            <div class="field">
-              <label for="su-password">Password</label>
-              <div class="password">
-                <input id="su-password" name="password" type="password" autocomplete="new-password" maxlength="128" required aria-describedby="su-password-error su-password-rules" />
-                <button type="button" class="reveal" aria-controls="su-password" aria-pressed="false" aria-label="Show password">Show</button>
-              </div>
-              <ul class="rules" id="su-password-rules">
-                <li data-rule="length">At least 8 characters</li>
-                <li data-rule="letter">A letter</li>
-                <li data-rule="number">A number</li>
-              </ul>
-              <p class="field-error" id="su-password-error"></p>
-            </div>
-            <div class="field">
-              <label for="su-confirm">Confirm password</label>
-              <div class="password">
-                <input id="su-confirm" name="confirmPassword" type="password" autocomplete="new-password" maxlength="128" required aria-describedby="su-confirm-error" />
-                <button type="button" class="reveal" aria-controls="su-confirm" aria-pressed="false" aria-label="Show password">Show</button>
-              </div>
-              <p class="field-error" id="su-confirm-error"></p>
-            </div>
-            <button class="btn" type="submit" data-busy-label="Creating account…">Create account</button>
-          </form>
-          <p class="switch">Already have an account? <a href="/">Sign in</a></p>
+    <div class="shell" data-page hidden>
+      <header class="brand">
+        <a class="logo" href="/" aria-label="Taxora home">
+          <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#0F1E45"/><path d="M9 10.5h14" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><path d="M16 10.5V23" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><circle cx="23" cy="21.5" r="2.3" fill="#22C3D6"/></svg>
+          <span>Taxora</span>
+        </a>
+        <p class="tagline">Your business finances, beautifully organized.</p>
+      </header>
+      <section class="showcase" aria-labelledby="pitch-title">
+        <svg class="backdrop" viewBox="0 0 900 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="fade" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9FB0CC" stop-opacity="0"/><stop offset=".35" stop-color="#9FB0CC" stop-opacity=".5"/><stop offset="1" stop-color="#9FB0CC" stop-opacity="0"/></linearGradient>
+            <path id="flow-a" d="M-40 640 C 180 560, 300 760, 520 640 S 820 520, 960 600"/>
+            <path id="flow-b" d="M-40 360 C 160 300, 340 460, 560 380 S 840 260, 960 320"/>
+            <path id="flow-c" d="M-40 860 C 220 800, 420 920, 640 840 S 860 760, 960 800"/>
+          </defs>
+          <g class="ledger">
+            <path d="M0 40H900M0 112H900M0 184H900M0 256H900M0 328H900M0 400H900M0 472H900M0 544H900M0 616H900M0 688H900M0 760H900M0 832H900M0 904H900M0 976H900M0 1048H900" stroke="url(#fade)" stroke-width="1"/>
+          </g>
+          <g class="flows" fill="none" stroke-width="1.25">
+            <use href="#flow-a" class="flow"/>
+            <use href="#flow-b" class="flow flow-slow"/>
+            <use href="#flow-c" class="flow"/>
+          </g>
+          <g class="dots">
+            <circle r="3" fill="#22C3D6"><animateMotion dur="18s" repeatCount="indefinite"><mpath href="#flow-a"/></animateMotion></circle>
+            <circle r="2.5" fill="#3B6FE0"><animateMotion dur="24s" begin="-9s" repeatCount="indefinite"><mpath href="#flow-a"/></animateMotion></circle>
+            <circle r="2.5" fill="#3B6FE0"><animateMotion dur="22s" repeatCount="indefinite"><mpath href="#flow-b"/></animateMotion></circle>
+            <circle r="3" fill="#22C3D6"><animateMotion dur="28s" begin="-14s" repeatCount="indefinite"><mpath href="#flow-b"/></animateMotion></circle>
+            <circle r="2.5" fill="#22C3D6"><animateMotion dur="26s" begin="-6s" repeatCount="indefinite"><mpath href="#flow-c"/></animateMotion></circle>
+          </g>
+        </svg>
+
+        <div class="pitch">
+          <h2 id="pitch-title">Everything your business needs to stay financially clear.</h2>
+          <p>Accounting · GST · Tax · Banking</p>
         </div>
+
+        <div class="stage" aria-hidden="true">
+          <div class="tile tile-revenue">
+            <p class="tile-label">Revenue this quarter</p>
+            <p class="tile-value">₹ 2,48,500</p>
+            <svg class="spark" viewBox="0 0 220 56" preserveAspectRatio="none">
+              <path class="spark-area" d="M0 46 L22 42 L44 44 L66 34 L88 37 L110 28 L132 30 L154 20 L176 23 L198 12 L220 8 L220 56 L0 56Z"/>
+              <path class="spark-line" d="M0 46 L22 42 L44 44 L66 34 L88 37 L110 28 L132 30 L154 20 L176 23 L198 12 L220 8"/>
+            </svg>
+            <p class="tile-foot"><span class="up">+12.6%</span> vs last quarter</p>
+          </div>
+
+          <div class="tile tile-gst">
+            <span class="badge-check"><svg viewBox="0 0 20 20"><path d="M5.5 10.5l3 3 6-6.5"/></svg></span>
+            <div>
+              <p class="tile-title">GST filing</p>
+              <p class="tile-sub">GSTR-3B filed for September</p>
+            </div>
+          </div>
+
+          <div class="tile tile-txn">
+            <p class="tile-title">12 transactions</p>
+            <p class="tile-sub">Reconciled with bank today</p>
+            <ul class="txn-rows">
+              <li><span class="pill in"></span><span class="bar"></span></li>
+              <li><span class="pill out"></span><span class="bar"></span></li>
+              <li><span class="pill in"></span><span class="bar"></span></li>
+            </ul>
+          </div>
+
+          <div class="tile tile-profit">
+            <p class="tile-label">Profit</p>
+            <p class="tile-value tile-value-sm up">+18.4%</p>
+            <div class="bars"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+          </div>
+        </div>
+      </section>
+      <main class="panel">
+        <div class="card">
+          <section class="view" aria-labelledby="signup-title">
+            <h1 id="signup-title">Create your Taxora account</h1>
+            <p class="lede">Set up your workspace and manage your business finances in one place.</p>
+            <div class="alert" id="signup-alert" role="alert" hidden></div>
+            <form id="signup-form" novalidate>
+              <div class="field">
+                <label for="su-name">Full name</label>
+                <div class="control">
+                  <svg class="field-icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="7" r="3.3"/><path d="M3.8 17c.9-3.1 3.3-4.6 6.2-4.6s5.3 1.5 6.2 4.6"/></svg>
+                  <input id="su-name" name="fullName" type="text" autocomplete="name" maxlength="80" placeholder="Your full name" required aria-describedby="su-name-error" />
+                </div>
+                <div class="field-error" id="su-name-error" aria-live="polite"><span></span></div>
+              </div>
+              <div class="field">
+                <label for="su-email">Work email</label>
+                <div class="control">
+                  <svg class="field-icon" viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="4.5" width="15" height="11" rx="2.2"/><path d="M3.2 6l6.8 5 6.8-5"/></svg>
+                  <input id="su-email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="you@company.com" required aria-describedby="su-email-error" />
+                </div>
+                <div class="field-error" id="su-email-error" aria-live="polite"><span></span></div>
+              </div>
+              <div class="field">
+                <label for="su-password">Password</label>
+                <div class="control">
+                  <svg class="field-icon" viewBox="0 0 20 20" aria-hidden="true"><rect x="3.8" y="8.5" width="12.4" height="9" rx="2.2"/><path d="M6.8 8.5V6.3a3.2 3.2 0 0 1 6.4 0v2.2"/></svg>
+                  <input id="su-password" name="password" type="password" autocomplete="new-password" maxlength="128" placeholder="Create a password" required aria-describedby="su-password-rules su-password-error" />
+                  <button type="button" class="reveal" aria-controls="su-password" aria-pressed="false" aria-label="Show password"><svg class="i-eye" viewBox="0 0 20 20" aria-hidden="true"><path d="M1.8 10S4.8 4.5 10 4.5 18.2 10 18.2 10 15.2 15.5 10 15.5 1.8 10 1.8 10Z"/><circle cx="10" cy="10" r="2.6"/></svg><svg class="i-eye-off" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 3l14 14M8.2 5a8.6 8.6 0 0 1 1.8-.2c5.2 0 8.2 5.2 8.2 5.2a14 14 0 0 1-2.4 3.1M5.5 6.3C3.1 7.8 1.8 10 1.8 10s3 5.5 8.2 5.5a7.7 7.7 0 0 0 3.6-.9"/><path d="M8.2 8.3a2.6 2.6 0 0 0 3.5 3.5"/></svg></button>
+                </div>
+                <div class="rules-wrap" id="su-rules-wrap">
+                  <ul class="rules" id="su-password-rules" aria-label="Password requirements">
+                    <li data-rule="length"><span class="tick" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4 8.4l2.6 2.6L12 5.6"/></svg></span>At least 8 characters</li>
+                    <li data-rule="letter"><span class="tick" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4 8.4l2.6 2.6L12 5.6"/></svg></span>One letter</li>
+                    <li data-rule="number"><span class="tick" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4 8.4l2.6 2.6L12 5.6"/></svg></span>One number</li>
+                  </ul>
+                </div>
+                <div class="field-error" id="su-password-error" aria-live="polite"><span></span></div>
+              </div>
+              <div class="field">
+                <label for="su-confirm">Confirm password</label>
+                <div class="control">
+                  <svg class="field-icon" viewBox="0 0 20 20" aria-hidden="true"><rect x="3.8" y="8.5" width="12.4" height="9" rx="2.2"/><path d="M6.8 8.5V6.3a3.2 3.2 0 0 1 6.4 0v2.2"/></svg>
+                  <input id="su-confirm" name="confirmPassword" type="password" autocomplete="new-password" maxlength="128" placeholder="Re-enter your password" required aria-describedby="su-confirm-error" />
+                  <button type="button" class="reveal" aria-controls="su-confirm" aria-pressed="false" aria-label="Show password"><svg class="i-eye" viewBox="0 0 20 20" aria-hidden="true"><path d="M1.8 10S4.8 4.5 10 4.5 18.2 10 18.2 10 15.2 15.5 10 15.5 1.8 10 1.8 10Z"/><circle cx="10" cy="10" r="2.6"/></svg><svg class="i-eye-off" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 3l14 14M8.2 5a8.6 8.6 0 0 1 1.8-.2c5.2 0 8.2 5.2 8.2 5.2a14 14 0 0 1-2.4 3.1M5.5 6.3C3.1 7.8 1.8 10 1.8 10s3 5.5 8.2 5.5a7.7 7.7 0 0 0 3.6-.9"/><path d="M8.2 8.3a2.6 2.6 0 0 0 3.5 3.5"/></svg></button>
+                </div>
+                <div class="field-error" id="su-confirm-error" aria-live="polite"><span></span></div>
+              </div>
+              <button class="btn btn-primary" type="submit" data-busy-label="Creating account" data-done-label="Account created"><span class="btn-text">Create account</span><span class="btn-spinner" aria-hidden="true"></span><svg class="btn-check" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10.5l3.2 3.2L15 7"/></svg></button>
+            </form>
+            <p class="terms">By creating an account, you agree to Taxora’s <strong>Terms</strong> and <strong>Privacy Policy</strong>.</p>
+            <p class="switch">Already have an account? <a href="/">Sign in</a></p>
+          </section>
+        </div>
+        <p class="trust"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5l6 2.3v4.6c0 3.9-2.6 6.9-6 8.1-3.4-1.2-6-4.2-6-8.1V4.8z"/><path d="M7.4 10l1.8 1.8 3.5-3.6"/></svg> Your financial data is protected with industry-standard security.</p>
       </main>
     </div>
     <noscript><p class="noscript">Taxora needs JavaScript to create your account.</p></noscript>

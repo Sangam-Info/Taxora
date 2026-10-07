@@ -5,6 +5,7 @@ Standalone sign-up / sign-in app for Taxora, built with Vite, Firebase Authentic
 ## What it does
 
 - **Sign up** with full name, email and password (validated in the browser, enforced again by Firebase and Firestore rules)
+- **Continue with Google** (popup sign-in; creates the Firestore profile on first use)
 - **Sign in** with "keep me signed in" (device-wide session) or a tab-only session
 - **Forgot password** email flow
 - **Email confirmation** banner with resend (60-second cooldown) and re-check
@@ -35,7 +36,7 @@ public/_headers       Cloudflare security + cache headers
 ## 1. Firebase setup (one time)
 
 1. Firebase Console → your project (default in `.firebaserc`: `taxora-547ee`; change it if you use a new project).
-2. **Authentication → Sign-in method →** enable **Email/Password**.
+2. **Authentication → Sign-in method →** enable **Email/Password** and **Google** (set a support email when prompted).
 3. **Firestore Database →** create database (production mode, region `asia-south1` Mumbai).
 4. **Firestore → Rules →** paste the contents of `firestore.rules` → **Publish**.
    (Or from the terminal: `npm run deploy:rules`.)

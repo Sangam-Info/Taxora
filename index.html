@@ -2,67 +2,151 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#1B2550" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#F6F8FB" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
     <link rel="stylesheet" href="/src/styles.css" />
-    <meta name="description" content="Sign in to your Taxora account." />
+    <meta name="description" content="Sign in to your Taxora workspace." />
     <title>Sign in | Taxora</title>
   </head>
   <body>
-    <div class="auth" data-page hidden>
-      <aside class="brand">
-        <a class="wordmark" href="/">Taxora</a>
-        <p class="brand-line">Books, GST and bank statements, kept in one ledger.</p>
-        <p class="brand-foot">A Sangam InfoAnalytics product</p>
-      </aside>
-      <main class="sheet">
-        <div class="form-wrap">
-          <section id="signin-view" aria-labelledby="signin-title">
-            <h1 id="signin-title">Sign in</h1>
-            <p class="lede">Enter your email and password to open your books.</p>
+    <div class="shell" data-page hidden>
+      <header class="brand">
+        <a class="logo" href="/" aria-label="Taxora home">
+          <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#0F1E45"/><path d="M9 10.5h14" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><path d="M16 10.5V23" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><circle cx="23" cy="21.5" r="2.3" fill="#22C3D6"/></svg>
+          <span>Taxora</span>
+        </a>
+        <p class="tagline">Your business finances, beautifully organized.</p>
+      </header>
+      <section class="showcase" aria-labelledby="pitch-title">
+        <svg class="backdrop" viewBox="0 0 900 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="fade" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9FB0CC" stop-opacity="0"/><stop offset=".35" stop-color="#9FB0CC" stop-opacity=".5"/><stop offset="1" stop-color="#9FB0CC" stop-opacity="0"/></linearGradient>
+            <path id="flow-a" d="M-40 640 C 180 560, 300 760, 520 640 S 820 520, 960 600"/>
+            <path id="flow-b" d="M-40 360 C 160 300, 340 460, 560 380 S 840 260, 960 320"/>
+            <path id="flow-c" d="M-40 860 C 220 800, 420 920, 640 840 S 860 760, 960 800"/>
+          </defs>
+          <g class="ledger">
+            <path d="M0 40H900M0 112H900M0 184H900M0 256H900M0 328H900M0 400H900M0 472H900M0 544H900M0 616H900M0 688H900M0 760H900M0 832H900M0 904H900M0 976H900M0 1048H900" stroke="url(#fade)" stroke-width="1"/>
+          </g>
+          <g class="flows" fill="none" stroke-width="1.25">
+            <use href="#flow-a" class="flow"/>
+            <use href="#flow-b" class="flow flow-slow"/>
+            <use href="#flow-c" class="flow"/>
+          </g>
+          <g class="dots">
+            <circle r="3" fill="#22C3D6"><animateMotion dur="18s" repeatCount="indefinite"><mpath href="#flow-a"/></animateMotion></circle>
+            <circle r="2.5" fill="#3B6FE0"><animateMotion dur="24s" begin="-9s" repeatCount="indefinite"><mpath href="#flow-a"/></animateMotion></circle>
+            <circle r="2.5" fill="#3B6FE0"><animateMotion dur="22s" repeatCount="indefinite"><mpath href="#flow-b"/></animateMotion></circle>
+            <circle r="3" fill="#22C3D6"><animateMotion dur="28s" begin="-14s" repeatCount="indefinite"><mpath href="#flow-b"/></animateMotion></circle>
+            <circle r="2.5" fill="#22C3D6"><animateMotion dur="26s" begin="-6s" repeatCount="indefinite"><mpath href="#flow-c"/></animateMotion></circle>
+          </g>
+        </svg>
+
+        <div class="pitch">
+          <h2 id="pitch-title">Everything your business needs to stay financially clear.</h2>
+          <p>Accounting · GST · Tax · Banking</p>
+        </div>
+
+        <div class="stage" aria-hidden="true">
+          <div class="tile tile-revenue">
+            <p class="tile-label">Revenue this quarter</p>
+            <p class="tile-value">₹ 2,48,500</p>
+            <svg class="spark" viewBox="0 0 220 56" preserveAspectRatio="none">
+              <path class="spark-area" d="M0 46 L22 42 L44 44 L66 34 L88 37 L110 28 L132 30 L154 20 L176 23 L198 12 L220 8 L220 56 L0 56Z"/>
+              <path class="spark-line" d="M0 46 L22 42 L44 44 L66 34 L88 37 L110 28 L132 30 L154 20 L176 23 L198 12 L220 8"/>
+            </svg>
+            <p class="tile-foot"><span class="up">+12.6%</span> vs last quarter</p>
+          </div>
+
+          <div class="tile tile-gst">
+            <span class="badge-check"><svg viewBox="0 0 20 20"><path d="M5.5 10.5l3 3 6-6.5"/></svg></span>
+            <div>
+              <p class="tile-title">GST filing</p>
+              <p class="tile-sub">GSTR-3B filed for September</p>
+            </div>
+          </div>
+
+          <div class="tile tile-txn">
+            <p class="tile-title">12 transactions</p>
+            <p class="tile-sub">Reconciled with bank today</p>
+            <ul class="txn-rows">
+              <li><span class="pill in"></span><span class="bar"></span></li>
+              <li><span class="pill out"></span><span class="bar"></span></li>
+              <li><span class="pill in"></span><span class="bar"></span></li>
+            </ul>
+          </div>
+
+          <div class="tile tile-profit">
+            <p class="tile-label">Profit</p>
+            <p class="tile-value tile-value-sm up">+18.4%</p>
+            <div class="bars"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+          </div>
+        </div>
+      </section>
+      <main class="panel">
+        <div class="card">
+          <section id="signin-view" class="view" aria-labelledby="signin-title">
+            <h1 id="signin-title">Welcome back</h1>
+            <p class="lede">Sign in to continue to your Taxora workspace.</p>
             <div class="alert" id="signin-alert" role="alert" hidden></div>
             <form id="signin-form" novalidate>
               <div class="field">
-                <label for="si-email">Email</label>
-                <input id="si-email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" required aria-describedby="si-email-error" />
-                <p class="field-error" id="si-email-error"></p>
+                <label for="si-email">Email address</label>
+                <div class="control">
+                  <svg class="field-icon" viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="4.5" width="15" height="11" rx="2.2"/><path d="M3.2 6l6.8 5 6.8-5"/></svg>
+                  <input id="si-email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="you@company.com" required aria-describedby="si-email-error" />
+                </div>
+                <div class="field-error" id="si-email-error" aria-live="polite"><span></span></div>
               </div>
               <div class="field">
-                <div class="label-row">
-                  <label for="si-password">Password</label>
-                  <button type="button" class="link" id="forgot-link">Forgot password?</button>
+                <label for="si-password">Password</label>
+                <div class="control">
+                  <svg class="field-icon" viewBox="0 0 20 20" aria-hidden="true"><rect x="3.8" y="8.5" width="12.4" height="9" rx="2.2"/><path d="M6.8 8.5V6.3a3.2 3.2 0 0 1 6.4 0v2.2"/></svg>
+                  <input id="si-password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required aria-describedby="si-password-error" />
+                  <button type="button" class="reveal" aria-controls="si-password" aria-pressed="false" aria-label="Show password"><svg class="i-eye" viewBox="0 0 20 20" aria-hidden="true"><path d="M1.8 10S4.8 4.5 10 4.5 18.2 10 18.2 10 15.2 15.5 10 15.5 1.8 10 1.8 10Z"/><circle cx="10" cy="10" r="2.6"/></svg><svg class="i-eye-off" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 3l14 14M8.2 5a8.6 8.6 0 0 1 1.8-.2c5.2 0 8.2 5.2 8.2 5.2a14 14 0 0 1-2.4 3.1M5.5 6.3C3.1 7.8 1.8 10 1.8 10s3 5.5 8.2 5.5a7.7 7.7 0 0 0 3.6-.9"/><path d="M8.2 8.3a2.6 2.6 0 0 0 3.5 3.5"/></svg></button>
                 </div>
-                <div class="password">
-                  <input id="si-password" name="password" type="password" autocomplete="current-password" required aria-describedby="si-password-error" />
-                  <button type="button" class="reveal" aria-controls="si-password" aria-pressed="false" aria-label="Show password">Show</button>
-                </div>
-                <p class="field-error" id="si-password-error"></p>
+                <div class="field-error" id="si-password-error" aria-live="polite"><span></span></div>
               </div>
-              <label class="check"><input type="checkbox" name="remember" checked /> Keep me signed in on this device</label>
-              <button class="btn" type="submit" data-busy-label="Signing in…">Sign in</button>
+              <div class="row-between">
+                <label class="check"><input type="checkbox" name="remember" checked /><span class="box" aria-hidden="true"></span>Remember me</label>
+                <button type="button" class="link" id="forgot-link">Forgot password?</button>
+              </div>
+              <button class="btn btn-primary" type="submit" data-busy-label="Signing in" data-done-label="Signed in"><span class="btn-text">Sign in</span><span class="btn-spinner" aria-hidden="true"></span><svg class="btn-check" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10.5l3.2 3.2L15 7"/></svg></button>
             </form>
+
+            <div class="divider"><span>or</span></div>
+
+            <button type="button" class="btn btn-secondary" id="google-btn" data-busy-label="Opening Google" data-done-label="Signed in">
+              <svg class="g-logo" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.72A5.4 5.4 0 0 1 3.68 9c0-.6.1-1.18.29-1.72V4.95H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.05z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
+              <span class="btn-text">Continue with Google</span><span class="btn-spinner" aria-hidden="true"></span><svg class="btn-check" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10.5l3.2 3.2L15 7"/></svg>
+            </button>
+
             <p class="switch">New to Taxora? <a href="/signup">Create an account</a></p>
           </section>
 
-          <section id="reset-view" aria-labelledby="reset-title" hidden>
+          <section id="reset-view" class="view" aria-labelledby="reset-title" hidden>
+            <button type="button" class="back" id="back-link"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12 5l-5 5 5 5"/></svg>Back to sign in</button>
             <h1 id="reset-title">Reset your password</h1>
-            <p class="lede">We’ll email you a link to choose a new password.</p>
+            <p class="lede">Enter the email you use for Taxora and we’ll send you a link to choose a new password.</p>
             <div class="alert" id="reset-alert" role="alert" hidden></div>
             <form id="reset-form" novalidate>
               <div class="field">
-                <label for="rs-email">Email</label>
-                <input id="rs-email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" required aria-describedby="rs-email-error" />
-                <p class="field-error" id="rs-email-error"></p>
+                <label for="rs-email">Email address</label>
+                <div class="control">
+                  <svg class="field-icon" viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="4.5" width="15" height="11" rx="2.2"/><path d="M3.2 6l6.8 5 6.8-5"/></svg>
+                  <input id="rs-email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="you@company.com" required aria-describedby="rs-email-error" />
+                </div>
+                <div class="field-error" id="rs-email-error" aria-live="polite"><span></span></div>
               </div>
-              <button class="btn" type="submit" data-busy-label="Sending link…">Send reset link</button>
+              <button class="btn btn-primary" type="submit" data-busy-label="Sending link" data-done-label="Link sent"><span class="btn-text">Send reset link</span><span class="btn-spinner" aria-hidden="true"></span><svg class="btn-check" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10.5l3.2 3.2L15 7"/></svg></button>
             </form>
-            <p class="switch"><button type="button" class="link" id="back-link">Back to sign in</button></p>
           </section>
         </div>
+        <p class="trust"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5l6 2.3v4.6c0 3.9-2.6 6.9-6 8.1-3.4-1.2-6-4.2-6-8.1V4.8z"/><path d="M7.4 10l1.8 1.8 3.5-3.6"/></svg> Your financial data is protected with industry-standard security.</p>
       </main>
     </div>
     <noscript><p class="noscript">Taxora needs JavaScript to sign you in.</p></noscript>

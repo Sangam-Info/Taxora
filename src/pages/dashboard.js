@@ -1,7 +1,7 @@
 import { getProfile, syncProfile, logOut, resendVerification, refreshVerification } from '../services/auth.js';
 import { requireUser } from '../services/session.js';
 import { friendlyError } from '../lib/errors.js';
-import { setBusy, showAlert, clearAlert, revealPage } from '../lib/ui.js';
+import { setBusy, setButtonState, succeed, showAlert, clearAlert, revealPage } from '../lib/ui.js';
 
 const dateFormat = new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 const formatDate = (timestamp) => (timestamp?.toDate ? dateFormat.format(timestamp.toDate()) : '—');
@@ -54,7 +54,7 @@ async function main() {
     setBusy(signOutButton, true);
     try {
       await logOut();
-      window.location.replace('/');
+      succeed(signOutButton, () => window.location.replace('/'), 400);
     } catch (error) {
       showAlert(alert, friendlyError(error));
       setBusy(signOutButton, false);
@@ -70,6 +70,7 @@ async function main() {
       if (await refreshVerification(user)) {
         render(user, await getProfile(user.uid));
         showAlert(alert, 'Email confirmed.', 'success');
+        setButtonState(checkButton, 'success');
       } else {
         showAlert(alert, 'Not confirmed yet. Open the link in the email we sent, then try again.');
       }
@@ -83,14 +84,16 @@ async function main() {
   const resendButton = document.getElementById('verify-resend');
   resendButton.addEventListener('click', async () => {
     clearAlert(alert);
-    setBusy(resendButton, true);
+    resendButton.disabled = true;
+    resendButton.textContent = 'Sending…';
     try {
       await resendVerification(user);
       showAlert(alert, `Confirmation email sent to ${user.email}.`, 'success');
       startCooldown(resendButton);
     } catch (error) {
       showAlert(alert, friendlyError(error));
-      setBusy(resendButton, false);
+      resendButton.disabled = false;
+      resendButton.textContent = 'Resend email';
     }
   });
 }
@@ -100,7 +103,8 @@ function startCooldown(button) {
   button.disabled = true;
   const tick = () => {
     if (remaining <= 0) {
-      setBusy(button, false);
+      button.disabled = false;
+      button.textContent = 'Resend email';
       return;
     }
     button.textContent = `Resend in ${remaining}s`;

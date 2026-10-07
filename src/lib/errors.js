@@ -14,7 +14,9 @@ const MESSAGES = {
   'auth/network-request-failed': 'Can’t reach the server. Check your internet connection and try again.',
   'auth/weak-password': 'Choose a stronger password: at least 8 characters with a letter and a number.',
   'auth/password-does-not-meet-requirements': 'This password doesn’t meet the security requirements. Try a longer mix of letters and numbers.',
-  'auth/operation-not-allowed': 'Email sign-in is turned off. Enable Email/Password in Firebase Console under Authentication.',
+  'auth/operation-not-allowed': 'This sign-in method is turned off. Enable it in Firebase Console under Authentication → Sign-in method.',
+  'auth/popup-blocked': 'Your browser blocked the Google sign-in window. Allow pop-ups for this site and try again.',
+  'auth/account-exists-with-different-credential': 'This email is already registered with a password. Sign in with your email and password instead.',
   'auth/requires-recent-login': 'Sign in again to continue.',
   'auth/invalid-api-key': BAD_CONFIG,
   'auth/api-key-not-valid.-please-pass-a-valid-api-key.': BAD_CONFIG,
@@ -23,6 +25,13 @@ const MESSAGES = {
   'unavailable': 'The database is unreachable right now. Check your connection and try again.',
   'failed-precondition': 'The database isn’t set up yet. Create a Firestore database in Firebase Console.',
 };
+
+// Closing the Google window isn't an error worth showing.
+const SILENT = new Set(['auth/popup-closed-by-user', 'auth/cancelled-popup-request', 'auth/user-cancelled']);
+
+export function isSilentError(error) {
+  return SILENT.has(error?.code);
+}
 
 export function friendlyError(error) {
   console.error(error);
