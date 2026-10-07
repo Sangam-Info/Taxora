@@ -4,22 +4,42 @@ Standalone sign-up / sign-in app for Taxora, built with Vite, Firebase Authentic
 
 ## What it does
 
-- **Sign up** with full name, email and password (validated in the browser, enforced again by Firebase and Firestore rules)
+- **Sign up** creates the account and profile, then sends you to **Sign In** with "Account created successfully. Please sign in." and your email pre-filled
+- Sign up with full name, email and password (validated in the browser, enforced again by Firebase and Firestore rules)
 - **Sign in** with "keep me signed in" (device-wide session) or a tab-only session
 - **Protected dashboard** showing the user's Firestore profile; signing out in one tab signs out every tab
 - **Firestore profile** at `users/{uid}`: `uid`, `fullName`, `email`, `createdAt`, `lastLoginAt`
 - If the profile can't be saved during sign-up, the new Auth account is deleted so no half-created accounts remain
 - Security headers (CSP, HSTS, no framing) via `public/_headers`
 
+## Client management
+
+After signing in, the dashboard is your firm's workspace:
+
+- **Clients list** with search (name, PAN, GSTIN, phone), live updates, empty and loading states
+- **Add client**: name, ITR period, phone, email, address, PAN, GST number, bank name, account holder, A/C number, IFSC, and an optional PIN
+- **Open a client** (`/client?id=…`): asks for the PIN when one is set, then shows all details (A/C number masked until you click Show)
+- **Client actions**: Edit client, Set / Change PIN, Remove PIN, Delete client (with confirmation), Log out client
+- **Forgot a client PIN?** Confirm your account password to remove it
+- 5 wrong PINs locks that client for 60 seconds; opened clients re-lock after 30 minutes, on Log out client, or on Sign out
+
+Data is stored at `users/{uid}/clients/{clientId}`. The Firestore rules only let the signed-in owner read or change their own clients, validate every field (PAN, GSTIN must contain the same PAN, phone, IFSC, account number), and reject anything but a salted PIN hash: the PIN itself is never stored.
+
 ## Project structure
 
 ```
 index.html            Sign in
 signup.html           Create account
-dashboard.html        Protected account page
+dashboard.html        Clients workspace (protected)
+client.html           Single client: PIN gate, details, actions
 src/firebase.js       Firebase init (reads VITE_* env vars)
 src/services/auth.js  Sign up, sign in, sign out, profile
 src/services/session.js  Route guards
+src/services/clients.js  Client CRUD, PIN set/remove, live listeners
+src/lib/client-form.js   Add/edit client form + validation
+src/lib/pin.js           PIN hashing (PBKDF2-SHA256, salted)
+src/lib/client-session.js  Which clients are open in this tab, wrong-PIN lockout
+src/lib/dialog.js, toast.js, format.js, flash.js  UI helpers
 src/lib/validation.js Form rules
 src/lib/errors.js     Firebase error codes -> plain messages
 src/lib/ui.js         Form validator, alerts, busy buttons, show/hide password
@@ -48,6 +68,16 @@ cp .env.example .env      # Windows PowerShell: copy .env.example .env
 # fill in the six VITE_FIREBASE_* values
 npm run dev               # http://localhost:5173
 ```
+
+### Test locally without touching live data (optional)
+
+Requires Java. In one terminal:
+
+```bash
+npx firebase-tools emulators:start --only auth,firestore --project demo-taxora
+```
+
+In a second terminal, add `VITE_USE_EMULATORS=true` to `.env` (with `VITE_FIREBASE_PROJECT_ID=demo-taxora`) and run `npm run dev`. Remove the line again before deploying.
 
 ## 3. Push to GitHub
 

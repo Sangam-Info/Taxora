@@ -22,9 +22,13 @@ function newProfile(user, fullName) {
   };
 }
 
-/** Creates the Auth account and its Firestore profile. Rolls back the account if the profile can't be saved. */
+/**
+ * Creates the Auth account and its Firestore profile, then signs out so the
+ * person signs in themselves. Rolls back the account if the profile can't be saved.
+ */
 export async function signUp({ fullName, email, password }) {
-  await setPersistence(auth, browserLocalPersistence);
+  // Tab-only session: the account is signed out again straight after creation.
+  await setPersistence(auth, browserSessionPersistence);
   const { user } = await createUserWithEmailAndPassword(auth, email, password);
 
   try {
@@ -32,15 +36,23 @@ export async function signUp({ fullName, email, password }) {
     await setDoc(userRef(user.uid), newProfile(user, fullName));
   } catch (error) {
     await user.delete().catch(() => {});
+    await signOut(auth).catch(() => {});
     throw error;
   }
-  return user;
+
+  await signOut(auth);
+  return { email: user.email };
 }
 
 export async function signIn({ email, password, remember }) {
   await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
   const { user } = await signInWithEmailAndPassword(auth, email, password);
-  await syncProfile(user);
+  try {
+    await syncProfile(user);
+  } catch (error) {
+    // The dashboard reports profile problems; signing in still succeeds.
+    console.warn('Could not sync profile', error);
+  }
   return user;
 }
 

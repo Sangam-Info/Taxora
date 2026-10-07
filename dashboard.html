@@ -4,38 +4,115 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#F6F8FB" />
+    <meta name="robots" content="noindex" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
     <link rel="stylesheet" href="/src/styles.css" />
-    <meta name="robots" content="noindex" />
-    <title>Your account | Taxora</title>
+    <title>Clients | Taxora</title>
   </head>
   <body class="app">
     <div class="dash" data-page hidden>
       <header class="topbar">
-        <a class="logo" href="/" aria-label="Taxora home">
+        <a class="logo" href="/dashboard" aria-label="Taxora dashboard">
           <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#0F1E45"/><path d="M9 10.5h14" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><path d="M16 10.5V23" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><circle cx="23" cy="21.5" r="2.3" fill="#22C3D6"/></svg>
           <span>Taxora</span>
         </a>
-        <button type="button" class="btn btn-ghost" id="signout" data-busy-label="Signing out" data-done-label="Signed out"><span class="btn-text">Sign out</span><span class="btn-spinner" aria-hidden="true"></span><svg class="btn-check" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10.5l3.2 3.2L15 7"/></svg></button>
+        <div class="topbar-right">
+          <span class="topbar-user" id="topbar-user"></span>
+          <button type="button" class="btn btn-ghost" id="signout" data-busy-label="Signing out" data-done-label="Signed out"><span class="btn-text">Sign out</span><span class="btn-spinner" aria-hidden="true"></span><svg class="btn-check" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10.5l3.2 3.2L15 7"/></svg></button>
+        </div>
       </header>
-      <main class="dash-main">
-        <div class="card card-wide">
-          <h1 id="welcome">Welcome</h1>
-          <p class="lede">You’re signed in. Here are your account details.</p>
-          <div class="alert" id="dash-alert" role="status" hidden></div>
+      <main class="workspace">
+        <div class="page-head">
+          <div>
+            <h1 id="welcome">Welcome</h1>
+            <p class="page-sub">Manage your clients, their tax IDs and bank details in one place.</p>
+          </div>
+          <button type="button" class="btn btn-primary btn-auto" id="add-client-btn"><svg class="btn-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4.5v11M4.5 10h11"/></svg><span class="btn-text">Add client</span></button>
+        </div>
 
-          <dl class="details">
+        <div class="alert" id="dash-alert" role="status" hidden></div>
+
+        <section class="box" aria-labelledby="clients-title">
+          <div class="box-head">
+            <div>
+              <h2 id="clients-title">Clients</h2>
+              <p class="box-sub" id="client-count">Loading clients…</p>
+            </div>
+            <div class="search">
+              <svg class="field-icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="5.5"/><path d="M13.2 13.2L17 17"/></svg>
+              <input type="search" id="client-search" placeholder="Search name, PAN, GSTIN or phone" aria-label="Search clients" autocomplete="off" spellcheck="false" disabled />
+            </div>
+          </div>
+
+          <div class="client-head" aria-hidden="true">
+            <span>Client</span><span>PAN</span><span>GST number</span><span>ITR period</span><span>Access</span><span></span>
+          </div>
+          <ul class="client-list" id="client-list" aria-labelledby="clients-title" aria-busy="true">
+            <li class="skeleton-row"><span></span><span></span><span></span></li>
+            <li class="skeleton-row"><span></span><span></span><span></span></li>
+            <li class="skeleton-row"><span></span><span></span><span></span></li>
+          </ul>
+
+          <div class="empty" id="clients-empty" hidden>
+            <div class="empty-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.8 19c.8-3.2 3.3-5 6.2-5s5.4 1.8 6.2 5M17 8v6M14 11h6"/></svg></div>
+            <h3>No clients yet</h3>
+            <p>Add your first client to keep their PAN, GST and bank details in one place.</p>
+            <button type="button" class="btn btn-primary btn-auto" id="empty-add-btn"><svg class="btn-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4.5v11M4.5 10h11"/></svg><span class="btn-text">Add client</span></button>
+          </div>
+          <p class="empty empty-small" id="clients-noresults" hidden>No clients match “<span id="noresults-term"></span>”.</p>
+        </section>
+
+        <section class="box box-quiet" aria-labelledby="account-title">
+          <h2 id="account-title">Your account</h2>
+          <dl class="details details-inline">
             <div><dt>Name</dt><dd id="d-name">—</dd></div>
             <div><dt>Email</dt><dd id="d-email">—</dd></div>
             <div><dt>Member since</dt><dd id="d-created">—</dd></div>
             <div><dt>Last sign-in</dt><dd id="d-last">—</dd></div>
           </dl>
-        </div>
+        </section>
       </main>
     </div>
+
+    <template id="client-row-tpl">
+      <li>
+        <a class="client-row">
+          <span class="c-main">
+            <span class="avatar" data-f="initials"></span>
+            <span class="c-name-wrap">
+              <span class="c-name" data-f="name"></span>
+              <span class="c-sub" data-f="phone"></span>
+            </span>
+          </span>
+          <span class="c-cell" data-label="PAN"><span class="mono" data-f="pan"></span></span>
+          <span class="c-cell" data-label="GST number"><span class="mono" data-f="gstin"></span></span>
+          <span class="c-cell" data-label="ITR period" data-f="period"></span>
+          <span class="c-cell c-access"><span class="badge" data-f="access"></span></span>
+          <span class="c-open">Open<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M8 5l5 5-5 5"/></svg></span>
+        </a>
+      </li>
+    </template>
+
+    <dialog class="modal modal-lg" id="client-dialog" aria-labelledby="client-dialog-title">
+      <form id="client-form" novalidate>
+        <header class="modal-head">
+          <h2 id="client-dialog-title">Add client</h2>
+          <button type="button" class="icon-btn" data-close aria-label="Close"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg></button>
+        </header>
+        <div class="modal-body">
+          <div class="alert" id="client-form-alert" role="alert" hidden></div>
+          <div id="client-form-fields"></div>
+        </div>
+        <footer class="modal-foot">
+          <button type="button" class="btn btn-secondary btn-auto" data-close>Cancel</button>
+          <button type="submit" class="btn btn-primary btn-auto" data-busy-label="Saving" data-done-label="Client added"><span class="btn-text">Add client</span><span class="btn-spinner" aria-hidden="true"></span><svg class="btn-check" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10.5l3.2 3.2L15 7"/></svg></button>
+        </footer>
+      </form>
+    </dialog>
+
     <noscript><p class="noscript">Taxora needs JavaScript to show your account.</p></noscript>
     <script type="module" src="/src/pages/dashboard.js"></script>
   </body>

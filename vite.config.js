@@ -2,9 +2,9 @@ import { defineConfig } from 'vite';
 import { fileURLToPath } from 'node:url';
 
 const page = (file) => fileURLToPath(new URL(file, import.meta.url));
-const cleanPages = { signup: 'signup.html', dashboard: 'dashboard.html' };
+const cleanPages = { signup: 'signup.html', dashboard: 'dashboard.html', client: 'client.html' };
 
-// Lets /signup and /dashboard work locally, matching Cloudflare's clean URLs.
+// Lets /signup, /dashboard and /client work locally, matching Cloudflare's clean URLs.
 function cleanUrls() {
   const rewrite = (req, _res, next) => {
     const [path, query] = req.url.split('?');
@@ -34,6 +34,7 @@ export default defineConfig({
         main: page('./index.html'),
         signup: page('./signup.html'),
         dashboard: page('./dashboard.html'),
+        client: page('./client.html'),
       },
     },
   },

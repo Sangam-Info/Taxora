@@ -23,7 +23,7 @@ const MESSAGES = {
   'auth/admin-restricted-operation': 'New sign-ups are blocked in Firebase. Turn on user sign-up under Authentication → Settings → User actions.',
   'auth/internal-error': 'Firebase returned an internal error. Check that Authentication is set up and this domain is authorised.',
   'not-found': 'The Firestore database doesn’t exist yet. Create it in Firebase Console under Firestore Database.',
-  'permission-denied': 'Your account details couldn’t be saved. Make sure the Firestore security rules are published.',
+  'permission-denied': 'Taxora couldn’t save or load this data. Make sure the latest Firestore security rules are published.',
   'unavailable': 'The database is unreachable right now. Check your connection and try again.',
   'failed-precondition': 'The database isn’t set up yet. Create a Firestore database in Firebase Console.',
 };

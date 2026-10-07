@@ -109,6 +109,10 @@ export function createValidator(form, rules) {
   });
 
   return {
+    /** Forget which fields were touched, e.g. when a form is reset. */
+    reset() {
+      touched.clear();
+    },
     recheck(name) {
       if (touched.has(name)) check(name);
     },

@@ -2,6 +2,7 @@ import { signUp } from '../services/auth.js';
 import { redirectIfSignedIn } from '../services/session.js';
 import { validateName, validateEmail, validateNewPassword, validateConfirm, passwordChecks } from '../lib/validation.js';
 import { friendlyError } from '../lib/errors.js';
+import { setFlash } from '../lib/flash.js';
 import {
   createValidator,
   setButtonState,
@@ -53,12 +54,13 @@ async function main() {
 
     setButtonState(submit, 'loading');
     try {
-      await signUp({
+      const { email } = await signUp({
         fullName: form.fullName.value.trim().replace(/\s+/g, ' '),
         email: form.email.value.trim(),
         password: form.password.value,
       });
-      succeed(submit, () => window.location.replace('/dashboard'));
+      setFlash({ type: 'registered', email });
+      succeed(submit, () => window.location.replace('/'));
     } catch (error) {
       showAlert(alert, friendlyError(error));
       setButtonState(submit, 'idle');
